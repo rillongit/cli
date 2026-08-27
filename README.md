@@ -108,10 +108,10 @@ CLI twins match MCP Accept tools: `create-seller`, `create-pay-link`, `enable-pa
 
 ## Publish
 
-Create the `@rill` org on npm (once), then:
+Scope is `@userill`. First publish is manual with `--otp`. After that, set Trusted Publisher on the npm package to GitHub `rillongit/cli` workflow `publish.yml`. Then bump the patch in `package.json` and push `main`.
 
 ```bash
-pnpm typecheck && pnpm publish --access public
+pnpm typecheck && pnpm publish --access public --otp=XXXXXX
 ```
 
 ## Monorepo
