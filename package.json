@@ -1,5 +1,5 @@
 {
-  "name": "@rill/cli",
+  "name": "@userill/cli",
   "version": "0.1.0",
   "private": false,
   "description": "Rill CLI, pay-url, pay, connect, wallets, sellers, and fund links",
@@ -8,7 +8,9 @@
     "rill": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public"

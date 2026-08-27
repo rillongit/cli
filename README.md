@@ -6,7 +6,7 @@ Accept (gate URL + webhook), Spend pay-url, Connect off-ramp, and fund links.
 
 ```bash
 # Preferred once published
-npm install -g @rill/cli
+npm install -g @userill/cli
 
 # From this repo (builds on install)
 npm install -g github:rillongit/cli
@@ -18,8 +18,8 @@ npx --yes github:rillongit/cli --help
 ## Install / run (monorepo)
 
 ```bash
-pnpm --filter @rill/cli dev -- --help
-pnpm --filter @rill/cli build
+pnpm --filter @userill/cli dev -- --help
+pnpm --filter @userill/cli build
 node apps/cli/dist/index.js --help
 ```
 
@@ -105,6 +105,14 @@ rill config --vw-key rill_vw_… --seller-key rill_sk_…
 Use `--json` for machine-readable output (includes `balise_html` on create-pay-link).
 
 CLI twins match MCP Accept tools: `create-seller`, `create-pay-link`, `enable-payments`, `webhooks`. Prefer MCP for claim/mint/register and guest cold-start.
+
+## Publish
+
+Create the `@rill` org on npm (once), then:
+
+```bash
+pnpm typecheck && pnpm publish --access public
+```
 
 ## Monorepo
 
