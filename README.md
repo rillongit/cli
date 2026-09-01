@@ -104,7 +104,7 @@ rill config --vw-key rill_vw_… --seller-key rill_sk_…
 
 Use `--json` for machine-readable output (includes `balise_html` on create-pay-link).
 
-CLI twins match MCP Accept tools: `create-seller`, `create-pay-link`, `enable-payments`, `webhooks`. Prefer MCP for claim/mint/register and guest cold-start.
+CLI twins match MCP Accept tools: `create-seller` / `sellers list|rotate|update`, `create-pay-link`, `enable-payments`, `webhooks create|list|test|delete`, `update-resource`. Prefer MCP for claim/mint/register and guest cold-start.
 
 ## Publish
 
