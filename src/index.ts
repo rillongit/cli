@@ -22,13 +22,19 @@ import {
   cmdCreatePayLink,
   cmdCreateSeller,
   cmdEnablePayments,
+  cmdSellersList,
+  cmdSellersRotate,
+  cmdSellersUpdate,
   cmdWebhooksCreate,
+  cmdWebhooksDelete,
   cmdWebhooksList,
+  cmdWebhooksTest,
 } from "./accept-commands.js";
 import {
   cmdBalance,
   cmdCreateResource,
   cmdListResources,
+  cmdUpdateResource,
 } from "./seller-commands.js";
 import { printError, printOk } from "./tui.js";
 
@@ -152,14 +158,86 @@ program
   });
 
 program
+  .command("update-resource")
+  .requiredOption("--id <resource_id>", "Resource id")
+  .option("--path <path>", "HTTP path or tool name")
+  .option("--amount <usd>", "Price in USD")
+  .option("--deactivate", "Set active=false")
+  .description("Update or deactivate a priced resource")
+  .action(
+    async (opts: {
+      id: string;
+      path?: string;
+      amount?: string;
+      deactivate?: boolean;
+    }) => {
+      const root = program.opts<{ sellerKey?: string; json?: boolean }>();
+      await cmdUpdateResource({
+        resourceId: opts.id,
+        path: opts.path,
+        amount: opts.amount,
+        deactivate: opts.deactivate,
+        sellerKey: root.sellerKey,
+        json: root.json,
+      });
+    },
+  );
+
+program
   .command("create-seller")
   .requiredOption("--name <name>", "Seller display name")
+  .option("--website <https>", "Company website for directory listing")
+  .option("--description <text>", "Short listing description")
   .description("Create an Accept seller (owner JWT); prints rill_sk_* once")
-  .action(async (opts: { name: string }) => {
+  .action(
+    async (opts: { name: string; website?: string; description?: string }) => {
+      const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
+      await cmdCreateSeller({
+        name: opts.name,
+        websiteUrl: opts.website,
+        description: opts.description,
+        ownerJwt: root.ownerJwt,
+        json: root.json,
+      });
+    },
+  );
+
+const sellers = program
+  .command("sellers")
+  .description("List, rotate, or update Accept sellers");
+
+sellers
+  .command("list")
+  .description("List sellers for the owner JWT")
+  .action(async () => {
     const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
-    await cmdCreateSeller({
-      name: opts.name,
+    await cmdSellersList({ ownerJwt: root.ownerJwt, json: root.json });
+  });
+
+sellers
+  .command("rotate")
+  .requiredOption("--id <seller_id>", "Seller id from sellers list")
+  .description("Rotate seller key; prints rill_sk_* once")
+  .action(async (opts: { id: string }) => {
+    const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
+    await cmdSellersRotate({
+      sellerId: opts.id,
       ownerJwt: root.ownerJwt,
+      json: root.json,
+    });
+  });
+
+sellers
+  .command("update")
+  .option("--website <https>", "Company website")
+  .option("--description <text>", "Short listing description")
+  .description("Update listing fields on the current seller key")
+  .action(async (opts: { website?: string; description?: string }) => {
+    const root = program.opts<{ sellerKey?: string; json?: boolean }>();
+    await cmdSellersUpdate({
+      websiteUrl: opts.website,
+      description: opts.description,
+      sellerKey: root.sellerKey,
       json: root.json,
     });
   });
@@ -223,6 +301,32 @@ webhooks
     const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
     await cmdWebhooksCreate({
       url: opts.url,
+      ownerJwt: root.ownerJwt,
+      json: root.json,
+    });
+  });
+
+webhooks
+  .command("test")
+  .requiredOption("--id <webhook_id>", "Webhook id from webhooks list")
+  .description("Send a test event to the endpoint")
+  .action(async (opts: { id: string }) => {
+    const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
+    await cmdWebhooksTest({
+      webhookId: opts.id,
+      ownerJwt: root.ownerJwt,
+      json: root.json,
+    });
+  });
+
+webhooks
+  .command("delete")
+  .requiredOption("--id <webhook_id>", "Webhook id from webhooks list")
+  .description("Delete a webhook endpoint")
+  .action(async (opts: { id: string }) => {
+    const root = program.opts<{ ownerJwt?: string; json?: boolean }>();
+    await cmdWebhooksDelete({
+      webhookId: opts.id,
       ownerJwt: root.ownerJwt,
       json: root.json,
     });

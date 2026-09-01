@@ -108,3 +108,46 @@ export async function cmdCreateResource(opts: {
   printOk("Resource created");
   printJson(res.body);
 }
+
+export async function cmdUpdateResource(opts: {
+  resourceId: string;
+  path?: string;
+  amount?: string;
+  deactivate?: boolean;
+  sellerKey?: string;
+  json?: boolean;
+}) {
+  const apiKey = await resolveSellerKeyAsync(opts.sellerKey);
+  if (!apiKey) {
+    printError("Missing seller key. Pass --seller-key or set RILL_SELLER_KEY.");
+    process.exitCode = 1;
+    return;
+  }
+  const body: Record<string, unknown> = {};
+  if (opts.deactivate) body.active = false;
+  if (opts.path?.trim()) body.path_or_tool = opts.path.trim();
+  if (opts.amount) body.amount = Number(opts.amount);
+  if (Object.keys(body).length === 0) {
+    printError("Pass --path, --amount, and/or --deactivate.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi({
+    method: "PATCH",
+    path: `/resources/${encodeURIComponent(opts.resourceId)}`,
+    apiKey,
+    body,
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  printOk(opts.deactivate ? "Resource deactivated." : "Resource updated.");
+  printJson(res.body);
+}

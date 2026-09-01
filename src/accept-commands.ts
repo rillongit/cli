@@ -55,6 +55,8 @@ function printGateFirst(opts: {
 
 export async function cmdCreateSeller(opts: {
   name: string;
+  websiteUrl?: string;
+  description?: string;
   ownerJwt?: string;
   json?: boolean;
 }) {
@@ -69,7 +71,11 @@ export async function cmdCreateSeller(opts: {
     method: "POST",
     path: "/sellers",
     apiKey: jwt,
-    body: { name: opts.name },
+    body: {
+      name: opts.name,
+      website_url: opts.websiteUrl,
+      description: opts.description,
+    },
     idempotencyKey: randomUUID(),
   });
 
@@ -93,6 +99,105 @@ export async function cmdCreateSeller(opts: {
     printOk("Seller created");
   }
   if (id) console.log(`seller_id: ${id}`);
+}
+
+export async function cmdSellersList(opts: {
+  ownerJwt?: string;
+  json?: boolean;
+}) {
+  const jwt = await resolveOwnerJwtAsync(opts.ownerJwt);
+  if (!jwt) {
+    printError("Missing owner JWT. Pass --owner-jwt or set RILL_OWNER_JWT.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi<{ ok?: boolean; sellers?: unknown[] }>({
+    method: "GET",
+    path: "/sellers",
+    apiKey: jwt,
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  const list = res.body.sellers ?? [];
+  if (list.length === 0) {
+    printOk("No sellers yet.");
+    return;
+  }
+  printJson(list);
+}
+
+export async function cmdSellersRotate(opts: {
+  sellerId: string;
+  ownerJwt?: string;
+  json?: boolean;
+}) {
+  const jwt = await resolveOwnerJwtAsync(opts.ownerJwt);
+  if (!jwt) {
+    printError("Missing owner JWT. Pass --owner-jwt or set RILL_OWNER_JWT.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi<ResourceBody>({
+    method: "POST",
+    path: `/sellers/${encodeURIComponent(opts.sellerId)}/rotate-key`,
+    apiKey: jwt,
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  const key = res.body.seller?.api_key;
+  printOk("Seller key rotated. Save rill_sk_* now (shown once):");
+  if (key) console.log(key);
+}
+
+export async function cmdSellersUpdate(opts: {
+  websiteUrl?: string;
+  description?: string;
+  sellerKey?: string;
+  json?: boolean;
+}) {
+  const apiKey = await resolveSellerKeyAsync(opts.sellerKey);
+  if (!apiKey) {
+    printError("Missing seller key. Pass --seller-key or set RILL_SELLER_KEY.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi<ResourceBody>({
+    method: "PATCH",
+    path: "/sellers/me",
+    apiKey,
+    body: {
+      website_url: opts.websiteUrl,
+      description: opts.description,
+    },
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  printOk("Seller listing updated.");
+  printJson(res.body.seller ?? res.body);
 }
 
 export async function cmdCreatePayLink(opts: {
@@ -355,4 +460,63 @@ export async function cmdWebhooksCreate(opts: {
     printOk("Signing secret, copy now (shown once):");
     console.log(hook.secret);
   }
+}
+
+export async function cmdWebhooksTest(opts: {
+  webhookId: string;
+  ownerJwt?: string;
+  json?: boolean;
+}) {
+  const jwt = await resolveOwnerJwtAsync(opts.ownerJwt);
+  if (!jwt) {
+    printError("Missing owner JWT. Pass --owner-jwt or set RILL_OWNER_JWT.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi({
+    method: "POST",
+    path: `/webhooks/${encodeURIComponent(opts.webhookId)}/test`,
+    apiKey: jwt,
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  printOk("Test event queued.");
+  printJson(res.body);
+}
+
+export async function cmdWebhooksDelete(opts: {
+  webhookId: string;
+  ownerJwt?: string;
+  json?: boolean;
+}) {
+  const jwt = await resolveOwnerJwtAsync(opts.ownerJwt);
+  if (!jwt) {
+    printError("Missing owner JWT. Pass --owner-jwt or set RILL_OWNER_JWT.");
+    process.exitCode = 1;
+    return;
+  }
+  const res = await callApi({
+    method: "DELETE",
+    path: `/webhooks/${encodeURIComponent(opts.webhookId)}`,
+    apiKey: jwt,
+  });
+  if (opts.json) {
+    printJson(res.body);
+    if (!res.ok) process.exitCode = 1;
+    return;
+  }
+  if (!res.ok) {
+    printError(apiError(res.body));
+    process.exitCode = 1;
+    return;
+  }
+  printOk("Webhook deleted.");
 }
