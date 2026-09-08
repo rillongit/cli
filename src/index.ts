@@ -246,6 +246,7 @@ program
   .command("create-pay-link")
   .option("--path <path>", "HTTP path or tool name (when creating)")
   .option("--amount <usd>", "Price in USD (when creating)")
+  .option("--interval <once|month|year>", "Billing period (default once)")
   .option("--resource <id>", "Existing resource id to compose URLs for")
   .option("--embed", "Also print balise HTML")
   .description("Create/share Accept gate URL (agents pay this)")
@@ -253,6 +254,7 @@ program
     async (opts: {
       path?: string;
       amount?: string;
+      interval?: string;
       resource?: string;
       embed?: boolean;
     }) => {
@@ -260,6 +262,7 @@ program
       await cmdCreatePayLink({
         path: opts.path,
         amount: opts.amount,
+        interval: opts.interval,
         resourceId: opts.resource,
         embed: opts.embed,
         sellerKey: root.sellerKey,
