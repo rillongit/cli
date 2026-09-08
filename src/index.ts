@@ -77,7 +77,9 @@ program
 
 program
   .command("pay")
-  .description("Background ledger: pay a resource or transfer to a handle / FQDN")
+  .description(
+    "Background ledger: pay a resource or transfer to a handle / FQDN",
+  )
   .option("--resource <id>", "Resource id")
   .option("--to <fqdn>", "Destination handle or agent FQDN")
   .option("--amount <usd>", "Transfer amount (required with --to)")

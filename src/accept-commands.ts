@@ -253,9 +253,12 @@ export async function cmdCreatePayLink(opts: {
             resource_id: resource.id,
             short_id: resource.short_id ?? null,
             amount: resource.amount ?? Number(opts.amount),
-            gate_url: resource.gate_url ?? (publicCode ? `${api}/r/${publicCode}` : null),
+            gate_url:
+              resource.gate_url ??
+              (publicCode ? `${api}/r/${publicCode}` : null),
             pay_page_url:
-              resource.pay_url ?? (publicCode ? `${app}/r/${publicCode}` : null),
+              resource.pay_url ??
+              (publicCode ? `${app}/r/${publicCode}` : null),
             balise_html: publicCode
               ? `<script src="${app}/rill-balise.js" data-resource-id="${publicCode}" data-api-base="${api}" async></script>`
               : null,

@@ -1,5 +1,8 @@
 /** Extract a human-readable error string from a Rill API JSON body. */
-export const apiError = (body: unknown, fallback = "Request failed"): string => {
+export const apiError = (
+  body: unknown,
+  fallback = "Request failed",
+): string => {
   if (!body || typeof body !== "object") return fallback;
   const o = body as Record<string, unknown>;
 

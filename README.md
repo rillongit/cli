@@ -27,11 +27,11 @@ Root aliases: `pnpm cli`, `pnpm dev:cli`.
 
 ## Auth
 
-| Flag / env | Role |
-| --- | --- |
-| `--key` / `RILL_VW_KEY` | Agent spend (`rill_vw_*` or `rill_vw_test_*`) |
-| `--seller-key` / `RILL_SELLER_KEY` | Accept seller (`rill_sk_*` or `rill_sk_test_*`) |
-| `--owner-jwt` / `RILL_OWNER_JWT` | Owner JWT (create seller, webhooks, fund links) |
+| Flag / env                           | Role                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `--key` / `RILL_VW_KEY`              | Agent spend (`rill_vw_*` or `rill_vw_test_*`)                                                                    |
+| `--seller-key` / `RILL_SELLER_KEY`   | Accept seller (`rill_sk_*` or `rill_sk_test_*`)                                                                  |
+| `--owner-jwt` / `RILL_OWNER_JWT`     | Owner JWT (create seller, webhooks, fund links)                                                                  |
 | `--environment` / `RILL_ENVIRONMENT` | `live` (default) or `test` for owner JWT calls (`X-Rill-Environment`). VW/seller keys encode mode in the prefix. |
 
 Keys can also be saved with `rill config --vw-key …` → `~/.config/rill/config.json`.
