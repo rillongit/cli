@@ -205,6 +205,9 @@ export async function cmdCreatePayLink(opts: {
   amount?: string;
   resourceId?: string;
   interval?: string;
+  skuKind?: string;
+  credits?: string;
+  creditUnit?: string;
   embed?: boolean;
   sellerKey?: string;
   json?: boolean;
@@ -241,6 +244,9 @@ export async function cmdCreatePayLink(opts: {
         path_or_tool: opts.path,
         amount: Number(opts.amount),
         billing_interval: opts.interval ?? "once",
+        ...(opts.skuKind ? { sku_kind: opts.skuKind } : {}),
+        ...(opts.credits != null ? { credits: Number(opts.credits) } : {}),
+        ...(opts.creditUnit ? { credit_unit: opts.creditUnit } : {}),
       },
       idempotencyKey: randomUUID(),
     });

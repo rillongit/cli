@@ -249,6 +249,12 @@ program
   .option("--path <path>", "HTTP path or tool name (when creating)")
   .option("--amount <usd>", "Price in USD (when creating)")
   .option("--interval <once|month|year>", "Billing period (default once)")
+  .option(
+    "--sku <one_shot|credit_topup>",
+    "one_shot unlocks one call (default); credit_topup grants credits",
+  )
+  .option("--credits <n>", "credit_topup: credits granted per payment")
+  .option("--credit-unit <unit>", "credit_topup: unit label, e.g. api_calls")
   .option("--resource <id>", "Existing resource id to compose URLs for")
   .option("--embed", "Also print balise HTML")
   .description("Create/share Accept gate URL (agents pay this)")
@@ -257,6 +263,9 @@ program
       path?: string;
       amount?: string;
       interval?: string;
+      sku?: string;
+      credits?: string;
+      creditUnit?: string;
       resource?: string;
       embed?: boolean;
     }) => {
@@ -265,6 +274,9 @@ program
         path: opts.path,
         amount: opts.amount,
         interval: opts.interval,
+        skuKind: opts.sku,
+        credits: opts.credits,
+        creditUnit: opts.creditUnit,
         resourceId: opts.resource,
         embed: opts.embed,
         sellerKey: root.sellerKey,
