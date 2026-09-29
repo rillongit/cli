@@ -499,7 +499,7 @@ export async function cmdWebhooksTest(opts: {
     process.exitCode = 1;
     return;
   }
-  printOk("Test event queued.");
+  printOk("Test payment.succeeded queued (receipt_id in the JSON).");
   printJson(res.body);
 }
 
